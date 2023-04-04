@@ -6,7 +6,7 @@
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="jar://$USER_HOME$/.ideaLibSources/nv-i18n-1.29-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/nv-i18n-1.29-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

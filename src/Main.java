@@ -14,7 +14,9 @@ public class Main {
         Service s = new Service("Poland");
         String weatherJson = s.getWeather("Warsaw");
         System.out.println(weatherJson);
-//        Double rate1 = s.getRateFor("USD");
+
+        Double rate1 = s.getRateFor("USD");
+        System.out.printf("Aktualny kurs dla podanej waluty to: %s%n", rate1);
 //        Double rate2 = s.getNBPRate();
 
 

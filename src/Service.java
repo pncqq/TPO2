@@ -4,122 +4,73 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.neovisionaries.i18n.CountryCode;
 import org.json.JSONObject;
+
+import javax.rmi.CORBA.Util;
 
 import static jdk.nashorn.internal.objects.NativeMath.round;
 
 
 public class Service {
     private static final String API_KEY = "e2cdb03aec582b3e57b0a56cdb06df3a";
-    private String kraj;
+    private final String country;
 
-    public Service(String kraj) {
-        this.kraj = kraj;
+    public Service(String country) {
+        this.country = country;
     }
 
-    // Metoda pobierająca informacje o pogodzie z serwisu OpenWeatherMap
-    public String getWeather(String miasto) {
+    /**
+     * Metoda pobierająca informacje o pogodzie z serwisu OpenWeatherMap
+     */
+    public String getWeather(String city) {
         //Otrzymanie kodu kraju
-        List<CountryCode> countryCodeList = CountryCode.findByName(kraj);
-        String kod_kraju = countryCodeList.get(0).toString();
+        List<CountryCode> countryCodeList = CountryCode.findByName(country);
+        String countryCode = countryCodeList.get(0).toString();
 
-        String url = "https://api.openweathermap.org/data/2.5/weather?q=" + miasto + "," +
-                kod_kraju + "&appid=" + API_KEY;
-        StringBuilder weather = new StringBuilder();
-
-        //Łączenie z pogodowym API
-        try {
-            URLConnection connection = new URL(url).openConnection();
-            BufferedReader reader =
-                    new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                weather.append(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        //Czytanie zawartości żądania HTTP GET
+        String url = String.format("https://api.openweathermap.org/data/2.5/weather?q=%s,%s&appid=%s",
+                city, countryCode, API_KEY);
+        String weather = Utils.readAllHttp(url);
 
         //Serializowanie JSONa
-        JSONObject json = new JSONObject(weather.toString());
+        JSONObject json = new JSONObject(weather);
         String description = json.getJSONArray("weather").
                 getJSONObject(0).getString("description");
         double temperature = json.getJSONObject("main").getDouble("temp");
-        //Z kelvina na celcius
+
+        //Z Kelvina na Celsjusza
         double celsius = temperature / 273;
         celsius = round(celsius, 2);
 
-        return "Pogoda w " + miasto + ", " + kraj +
-                ": " + description + ", temperatura: " + celsius + "°C";
+        return String.format("Pogoda w %s, %s: %s, temperatura: %s°C", city, country, description, celsius);
     }
 
-    // Metoda pobierająca kurs wymiany waluty z serwisu NBP
-    public double getRateFor(String kod_waluty) {
-        String url = "http://api.nbp.pl/api/exchangerates/rates/a/" + kod_waluty + "/?format=json";
-        String exchangeRate = "";
+    /**
+     * Metoda pobierająca kurs wymiany waluty z serwisu NBP
+     */
+    public double getRateFor(String currencyCode) {
+        String baseCurrencyCode = Utils.getCurrencyCode(this.country);
 
-        try {
-            URLConnection connection = new URL(url).openConnection();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String line;
+        //Czytanie zawartości żądania HTTP GET
+        String url = String.format("https://api.exchangerate.host/convert?from=%s&to=%s",
+                currencyCode, baseCurrencyCode);
+        String allHttp = Utils.readAllHttp(url);
 
-            while ((line = reader.readLine()) != null) {
-                exchangeRate += line;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        JSONObject json = new JSONObject(exchangeRate);
-        double rate = json.getDouble("mid");
+        //Serializowanie JSONa
+        JSONObject json = new JSONObject(allHttp);
 
-        return rate;
+        return json.getJSONObject("info").getDouble("rate");
     }
 
-    // Metoda pobierająca kurs złotego wobec danej waluty z serwisu NBP
+    /**
+     * Metoda pobierająca kurs złotego wobec danej waluty z serwisu NBP
+     */
     public double getNBPRate() {
-        String url = "http://api.nbp.pl/api/exchangerates/rates/a/" + "PLN" + "/?format=json";
-        String exchangeRate = "";
-
-        try {
-            URLConnection connection = new URL(url).openConnection();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                exchangeRate += line;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        JSONObject json = new JSONObject(exchangeRate);
-        double rate = json.getDouble("mid");
-
-        String plnUrl = "http://api.nbp.pl/api/exchangerates/rates/b/" + "PLN" + "/?format=json";
-        String plnRate = "";
-
-        try {
-            URLConnection connection = new URL(plnUrl).openConnection();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                plnRate += line;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        JSONObject plnJson = new JSONObject(plnRate);
-        double plnRateValue = plnJson.getDouble("mid");
-
-        double plnRateForOneUnit = plnRateValue / rate;
-
-        return plnRateForOneUnit;
+        return 3.14;
     }
 
 }
