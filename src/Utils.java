@@ -1,6 +1,8 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Currency;
@@ -30,7 +32,7 @@ public class Utils {
         return Currency.getInstance(new Locale("", countryCode)).getCurrencyCode();
     }
 
-    public static String readAllHttp(String url) {
+    public static String readAllHttp(String url) throws IOException {
         String allText = null;
 
         try {
@@ -40,9 +42,16 @@ public class Utils {
             allText = reader.lines().collect(Collectors.joining());
 
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IOException();
         }
         return allText;
     }
 
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
 }
