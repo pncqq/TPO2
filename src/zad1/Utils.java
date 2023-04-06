@@ -1,3 +1,11 @@
+/**
+ *
+ * @author Michalski Filip S24916
+ *
+ */
+
+package zad1;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -33,7 +41,7 @@ public class Utils {
     }
 
     public static String readAllHttp(String url) throws IOException {
-        String allText = null;
+        String allText;
 
         try {
             URLConnection connection = new URL(url).openConnection();

@@ -1,5 +1,14 @@
+/**
+ *
+ * @author Michalski Filip S24916
+ *
+ */
+
+package zad1;
+
 import java.io.IOException;
 import java.util.List;
+
 import com.neovisionaries.i18n.CountryCode;
 import org.json.JSONObject;
 
@@ -25,7 +34,7 @@ public class Service {
         //Czytanie zawartości żądania HTTP GET
         String url = String.format("https://api.openweathermap.org/data/2.5/weather?q=%s,%s&appid=%s",
                 city, countryCode, API_KEY);
-        String weather = null;
+        String weather;
         try {
             weather = Utils.readAllHttp(url);
         } catch (Exception e) {
@@ -54,7 +63,7 @@ public class Service {
         //Czytanie zawartości żądania HTTP GET
         String url = String.format("https://api.exchangerate.host/convert?from=%s&to=%s",
                 currencyCode, baseCurrencyCode);
-        String allHttp = null;
+        String allHttp;
         try {
             allHttp = Utils.readAllHttp(url);
         } catch (IOException e) {
@@ -77,7 +86,7 @@ public class Service {
 
         //Czytanie zawartości żądania HTTP GET
         String url = String.format("http://api.nbp.pl/api/exchangerates/rates/%s/%s/?format=json", table, baseCurrencyCode);
-        String allHttp = null;
+        String allHttp;
         try {
             allHttp = Utils.readAllHttp(url);
         } catch (IOException e) {

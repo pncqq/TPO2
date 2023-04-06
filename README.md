@@ -11,7 +11,7 @@ W p. 2 - serwisu exchangerate.host<p>
 W p. 3 - informacji ze stron NBP: http://www.nbp.pl/kursy/kursya.html i http://www.nbp.pl/kursy/kursyb.html <p>
 W p. 4 użyć klasy WebEngine z JavaFX dla wbudowania przeglądarki w aplikację Swingową.<p>
 
-Program winien zawierać klasę Service z konstruktorem Service(String kraj) i metodami::
+Program winien zawierać klasę zad1.Service z konstruktorem zad1.Service(String kraj) i metodami::
 
     String getWeather(String miasto)
     zwraca informację o pogodzie w podanym mieście danego kraju
@@ -27,7 +27,7 @@ Następujące przykładowa klasa  pokazuje możliwe użycie tych metod:
 
     public class Main {
     public static void main(String[] args) {
-    Service s = new Service("Poland");
+    zad1.Service s = new zad1.Service("Poland");
     String weatherJson = s.getWeather("Warsaw");
     Double rate1 = s.getRateFor("USD");
     Double rate2 = s.getNBPRate();
